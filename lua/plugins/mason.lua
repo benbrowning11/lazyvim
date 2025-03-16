@@ -29,6 +29,11 @@ return {
       "shfmt",
       "stylua",
       "tailwindcss-language-server",
+      
+      -- Added for TypeScript and Vue 3 support
+      "typescript-language-server",
+      "vue-language-server",
+      "volar",
     },
   },
 }

@@ -1,56 +1,106 @@
-# 💤 LazyVim + Laravel
+# Laravel Neovim Configuration
 
-(and some stuff I also use)
-This is my best effort to fully integrate my LazyVim config with Laravel and all Laravel-related tools.
-Works great with Livewire v3 as well as Volt and Folio.
-When using Volt, use class-based syntax for maximum compatibility.
-Functional Volt works, too, but has issues with `$this`.
+A modern Neovim configuration for Laravel development with TypeScript and Vue 3 support.
 
-A starter template for [LazyVim](https://github.com/LazyVim/LazyVim).
-Refer to the [documentation](https://lazyvim.github.io/installation) to get started.
+## Features
 
-## Laravel Native
+This configuration includes all the great LazyVim features (including its much appreciated documentation), plus:
 
-This config is setup with the best available dev tooling for laravel
+### PHP
 
-- Intelephense
-- Blade Language Support
-- Blade Formatter
-- Pint
-- Phpstan (make sure you configure larastan in your project)
-- Rustywind
-- Tailwind LS
-- XDebug with configuration for Laravel Sail
-- Treesitter beta for blade files included
+- Intellephense as the language server
+- Pint for PHP formatting
+- Xdebug with UI, line output, and preconfigured for Sail
 
-## Additions
+### Laravel
 
-### Requirements
+- ~~Blade language support~~ (Removed: Using Vue 3 instead)
+- ~~Blade formatter~~ (Removed: Using Vue 3 instead)
 
-If you encounter an issue with `Intelephense` not recognising facade or model function calls, you will need to install [Laravel IDE Helper](https://github.com/barryvdh/laravel-ide-helper) into your project and execute the relevant artisan commands. Thanks to [@ermand](https://github.com/ermand) for bringing up the issue as well as the solution.
+### Vue 3
 
-Make sure you install all TreeSitter parsers by doing:
-`:TSInstall all` and `:TSInstall php_only`.
-This will install both the experimental blade parser, for which configuration is included in this config, as well as the php_only parser, which is needed for it to work fully.
-For some reason php_only is not included in `all`.
+- Vue language support
+- Vue 3 template intellisense
+- Component auto-imports
+- SFC (Single File Component) support
 
-Optional:
+### TypeScript
 
-- lazygit
-- lazydocker
+- TypeScript language server
+- Type checking and intellisense
+- Auto-import support
 
-(you should use both, they are great)
+### Tailwind
 
-### LSP
-
-- Tailwind support
-- Intelephense for php (best in class for Laravel development)
+- Tailwind language server
+- Tailwind color preview
+- Rustywind (Rust-based Tailwind class sorter)
 
 ### Theme
 
-- I concede, we are back to using catppuccin. There is just too many integrations.
+- The only acceptable choice: Gruvbox
+
+## Installation
+
+1. Ensure you have the latest Neovim release (latest stable or HEAD)
+2. Fork this repository
+3. Clone the repository to `~/.config/nvim/`
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/REPOSITORY_NAME ~/.config/nvim
+   ```
+4. Start Neovim
+   ```bash
+   nvim
+   ```
+5. Let lazy.nvim do its job (it will install all required plugins)
+6. Restart Neovim
+7. Open Mason (`:Mason`) and install the required packages
+   - PHP: `intelephense`, `php-cs-fixer`, `pint`
+   - TypeScript: `typescript-language-server`, `eslint-lsp`
+   - Vue: `vue-language-server`, `volar`
+   - Tailwind: `tailwindcss-language-server`, `rustywind`
+8. Restart Neovim once more
+9. Enjoy your Neovim setup for Laravel development!
+
+## Keymaps
+
+The configuration inherits all keymaps from LazyVim. Here are some additional keymaps specifically for Laravel development:
+
+| Key Combination | Mode | Action                             |
+| --------------- | ---- | ---------------------------------- |
+| `<Leader>xd`    | n    | Toggle Xdebug                      |
+| `<Leader>xb`    | n    | Toggle Xdebug breakpoint           |
+| `<Leader>ts`    | n    | Run type check on current file     |
+| `<Leader>tw`    | n    | Sort Tailwind classes in selection |
+
+## Customization
+
+You can customize this configuration by:
+
+1. Editing `~/.config/nvim/lua/config/options.lua` for Neovim options
+2. Editing `~/.config/nvim/lua/config/keymaps.lua` for keymaps
+3. Editing `~/.config/nvim/lua/config/lazy.lua` for plugin management
+4. Adding or modifying configuration in `~/.config/nvim/lua/plugins/` directory
 
 ## Troubleshooting
 
-If opening a py file leads to pyright analyzing your whole library, make sure to add an empty `pyrightconfig.json` into the file root.
-This can be your $HOME folder or for example on darwin using homebrew it could be `/opt/homebrew/`.
+### Common Issues
+
+#### PHP LSP Not Working
+
+- Ensure Intellephense is installed via Mason (`:Mason` and check)
+- Check if PHP is in your PATH
+
+#### TypeScript Type Checking Issues
+
+- Make sure you have a proper `tsconfig.json` in your project root
+- Install required dependencies: `@vue/typescript-plugin` for Vue projects
+
+#### Vue SFC Highlighting Problems
+
+- Ensure Vue language server is installed via Mason
+- Try reconnecting the language server with `:LspRestart`
+
+## License
+
+[MIT License](LICENSE)
