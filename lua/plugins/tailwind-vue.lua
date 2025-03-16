@@ -1,5 +1,4 @@
 return {
-  -- Tailwind CSS support for Vue
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
@@ -8,10 +7,7 @@ return {
       -- Configure Tailwind CSS language server
       opts.servers.tailwindcss = {
         filetypes = { 
-          -- Standard filetypes
-          "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact",
-          -- Add Vue support
-          "vue",
+          "html", "css", "scss", "javascript", "javascriptreact", "typescript", "typescriptreact", "vue"
         },
         init_options = {
           userLanguages = {
@@ -26,7 +22,8 @@ return {
             },
             experimental = {
               classRegex = {
-                -- Support for class utilities like clsx and cva
+                "@?class\\(([^]*)\\)",
+                "'([^']*)'",
                 [[clsx\\(([^)]*)\\)]],
                 [[cva\\(([^)]*)\\)]],
                 [[tv\\(([^)]*)\\)]],
@@ -37,6 +34,32 @@ return {
       }
       
       return opts
+    end,
+  },
+  
+  -- Add Tailwind colorizer support
+  {
+    "NvChad/nvim-colorizer.lua",
+    opts = {
+      user_default_options = {
+        tailwind = true,
+      },
+    },
+  },
+  
+  -- Add Tailwind completion with colors
+  {
+    "hrsh7th/nvim-cmp",
+    dependencies = {
+      { "roobert/tailwindcss-colorizer-cmp.nvim", config = true },
+    },
+    opts = function(_, opts)
+      -- original LazyVim kind icon formatter
+      local format_kinds = opts.formatting.format
+      opts.formatting.format = function(entry, item)
+        format_kinds(entry, item) -- add icons
+        return require("tailwindcss-colorizer-cmp").formatter(entry, item)
+      end
     end,
   },
 }

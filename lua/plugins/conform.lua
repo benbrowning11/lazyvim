@@ -16,6 +16,8 @@ return {
         sh = { "shfmt" },
         php = { "pint" },
         blade = { "blade-formatter", "rustywind" },
+        vue = { "prettierd", "rustywind" }, -- Add Vue formatter
+        typescript = { "prettierd" }, -- Add TypeScript formatter
         python = { "black" },
         javascript = { "prettierd" },
         -- rust = { "rustfmt" },
@@ -47,6 +49,16 @@ return {
           }, "pint"),
           args = { "$FILENAME" },
           stdin = false,
+        },
+        -- Configure Prettier for Vue files
+        prettierd = {
+          meta = {
+            url = "https://github.com/fsouza/prettierd",
+            description = "Daemon for prettier, the opinionated code formatter.",
+          },
+          env = {
+            PRETTIERD_DEFAULT_CONFIG = vim.fn.expand("~/.config/nvim/.prettierrc.json"),
+          },
         },
       },
     }

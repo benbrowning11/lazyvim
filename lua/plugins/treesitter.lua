@@ -12,6 +12,17 @@ return {
           if vim.bo.filetype == "blade" and language_tree._lang ~= "javascript" and language_tree._lang ~= "php" then
             return "{{-- %s --}}"
           end
+
+          if vim.bo.filetype == "vue" then
+            -- For Vue components, provide context-aware comments based on cursor position
+            if language_tree._lang == "typescript" or language_tree._lang == "javascript" then
+              return "// %s"
+            elseif language_tree._lang == "css" or language_tree._lang == "scss" then
+              return "/* %s */"
+            else
+              return "<!-- %s -->"  -- Default to HTML comments for template section
+            end
+          end
         end,
       },
     },
@@ -44,6 +55,12 @@ return {
       },
       filetype = "blade",
     }
+
+    if not parser_config.vue then
+      -- Vue parser should be part of official treesitter parsers
+      -- but we can make sure it's properly installed
+      vim.cmd [[TSInstall vue typescript]] 
+    end
 
     require("nvim-treesitter.configs").setup(opts)
   end,

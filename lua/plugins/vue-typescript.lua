@@ -1,25 +1,35 @@
 return {
-  -- Vue 3 support
+  -- Configure LSP for Vue and TypeScript
   {
     "neovim/nvim-lspconfig",
     opts = function(_, opts)
       if not opts.servers then opts.servers = {} end
       
-      -- Configure Volar for Vue 3
+       -- Vue language server (Volar)
       opts.servers.volar = {
         filetypes = { "vue", "typescript", "javascript" },
         init_options = {
           typescript = {
-            tsdk = vim.fn.expand("$HOME/node_modules/typescript/lib")
-            -- You may need to adjust this path based on your project
+            -- Fix for Windows path to TypeScript
+            tsdk = vim.fn.expand(vim.fn.stdpath("data") .. "/mason/packages/typescript-language-server/node_modules/typescript/lib"),
           },
         },
       }
+
+      if opts.setup then
+        opts.setup.volar = function(_, _opts)
+          -- Fix path for Windows
+          local mason_bin = vim.fn.stdpath("data") .. "/mason/bin/vue-language-server"
+          if vim.fn.has("win32") == 1 then
+            mason_bin = mason_bin .. ".CMD" -- Windows needs .CMD extension
+          end
+          _opts.cmd = { mason_bin, "--stdio" }
+          return false
+        end
+      end
       
-      -- Configure TypeScript server
+      -- TypeScript language server
       opts.servers.tsserver = {
-        root_dir = require("lspconfig").util.root_pattern("package.json", "tsconfig.json"),
-        single_file_support = true,
         settings = {
           typescript = {
             inlayHints = {
@@ -35,37 +45,5 @@ return {
       
       return opts
     end,
-  },
-  
-  -- Ensure rustywind works with Vue files for Tailwind sorting
-  {
-    "tlaceby/rustywind.nvim",
-    optional = true,
-    opts = function(_, opts)
-      if opts.filetypes then
-        table.insert(opts.filetypes, "vue")
-      else
-        opts.filetypes = { "html", "css", "javascript", "typescript", "vue" }
-      end
-      return opts
-    end,
-  },
-  
-  -- Configure formatter for Vue and TypeScript
-  {
-    "stevearc/conform.nvim",
-    optional = true,
-    opts = function(_, opts)
-      if not opts.formatters_by_ft then opts.formatters_by_ft = {} end
-      
-      opts.formatters_by_ft.vue = { "prettierd" }
-      opts.formatters_by_ft.typescript = { "prettierd" }
-      
-      return opts
-    end,
-  },
-  
-  -- Disable Blade plugins if they exist
-  { "jwalton512/vim-blade", enabled = false },
-  { "EmranMR/blade-formatter", enabled = false },
+  }
 }

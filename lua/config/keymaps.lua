@@ -20,3 +20,14 @@ map("n", "<leader>gd",
       { cwd = Util.get_root(), esc_esc = false })
   end,
   { desc = "LazyDocker (root dir)" })
+
+  
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = "vue",
+    callback = function()
+      -- Navigate between Vue sections
+      vim.keymap.set("n", "<leader>vt", "/\\<template\\><CR>:nohl<CR>", { buffer = true, desc = "Go to template" })
+      vim.keymap.set("n", "<leader>vs", "/\\<script\\><CR>:nohl<CR>", { buffer = true, desc = "Go to script" })
+      vim.keymap.set("n", "<leader>vc", "/\\<style\\><CR>:nohl<CR>", { buffer = true, desc = "Go to style" })
+    end,
+  })
