@@ -301,8 +301,61 @@ vim.api.nvim_create_autocmd("FileType", {
         end
       end
       
-      -- Show LSP hover info for the class
-      vim.lsp.buf.hover()
+      -- First try LSP hover which works for both Tailwind and defined custom classes
+      local has_hover = vim.lsp.buf.hover()
+      
+      -- If in a Vue file, also check for custom class definitions in <style> section
+      if vim.bo.filetype == "vue" and (not has_hover or has_hover == false) then
+        -- Save cursor position
+        local cursor_pos = vim.fn.getpos(".")
+        
+        -- Look for class definition in current file's style section
+        local style_line = vim.fn.search("^\\s*<style", "wn")
+        if style_line > 0 then
+          -- Temporarily move to style section
+          local temp_pos = vim.fn.getpos(".")
+          vim.fn.cursor(style_line, 1)
+          
+          -- Search for class definition
+          local found = vim.fn.search("\\." .. word .. "\\([^-_a-zA-Z0-9]\\|$\\)", "W")
+          
+          if found > 0 and found > style_line then
+            -- Found class definition, extract and display it
+            local start_line = found
+            local end_line = found
+            
+            -- Find the closing brace to get the full class definition
+            while end_line <= vim.fn.line("$") do
+              local line_text = vim.fn.getline(end_line)
+              if line_text:find("}") then
+                break
+              end
+              end_line = end_line + 1
+            end
+            
+            -- Extract class definition
+            local class_def = vim.fn.getline(start_line, end_line)
+            
+            -- Create float window with class definition
+            local buf = vim.api.nvim_create_buf(false, true)
+            vim.api.nvim_buf_set_lines(buf, 0, -1, true, class_def)
+            vim.api.nvim_buf_set_option(buf, "filetype", "css")
+            
+            vim.api.nvim_open_win(buf, false, {
+              relative = "cursor",
+              row = 1,
+              col = 0,
+              width = 60,
+              height = #class_def,
+              style = "minimal",
+              border = "rounded",
+            })
+          end
+          
+          -- Restore cursor position
+          vim.fn.setpos(".", cursor_pos)
+        end
+      end
     end, { buffer = true, desc = "Show CSS class info" })
   end,
 })
